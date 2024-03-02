@@ -58,67 +58,71 @@ process.on("exit", () => {
 
   allTestsObj.forEach((test, testIndex) => {
 
-    let subStrings = [];
-    
-    let currentTestString = test.texts[0];
-    let subStringLength = currentTestString.length;
-    
-    let validSubstringFound = false;
-    
-    let sealing = 0
-
-    // check for substring length
-    for (let j = 0; j <= subStringLength;) {
-
-        let allPatterns = {};
-        
-        // find all substrings of this length in all texts (per text)
-        test.texts.forEach((text) => {
-
-            // get substrings
-            let patternsInThisText = new Set();
-
-            for (let i = 0; i + subStringLength <= text.length; i++) {
+      
+      let subStrings = [];
+      
+      let currentTestString = test.texts[0];
+      let subStringLength = currentTestString.length;
+      
+      let validSubstringFound = false;
+      
+      let sealing = 0
+      
+      // check for substring length
+      for (let j = 0; j <= subStringLength;) {
+          
+          if(testIndex == 11 && subStringLength == 4){
+                console.log();
+          }
+          let allPatterns = {};
+          
+          // find all substrings of this length in all texts (per text)
+          test.texts.forEach((text) => {
+              
+              // get substrings
+              let patternsInThisText = new Set();
+              
+              for (let i = 0; i + subStringLength <= text.length; i++) {
+                  
+                  let substr = text.substr(i, subStringLength);
+                  patternsInThisText.add(substr);
+                }
                 
-                let substr = text.substr(i, subStringLength);
-                patternsInThisText.add(substr);
-            }
-
-            patternsInThisText.forEach((pattern) => {
-
-                if (allPatterns[pattern] == undefined) {
-                    allPatterns[pattern] = 1;
+                patternsInThisText.forEach((pattern) => {
+                    
+                    if (allPatterns[pattern] == undefined) {
+                        allPatterns[pattern] = 1;
+                    }
+                    else{
+                        allPatterns[pattern]++;
+                        
+                        if(allPatterns[pattern] >= test.ondergrens){
+                            
+                            if(sealing < allPatterns[pattern]){
+                                sealing = allPatterns[pattern];
+                            }
+                            
+                            j = subStringLength + 3; // to break on next substringlength
+                            validSubstringFound = true;
+                        }
+                    }
+                    
+                })
+                
+                
+            });
+            
+            // PRINT HERE
+            // if valid substring (ondergrens approved) has been found
+            // stop searching
+            
+            
+            if(validSubstringFound || subStringLength == 0){
+                if(subStringLength == 0){
+                    console.log(testIndex + 1 + " ONMOGELIJK");
                 }
                 else{
-                    allPatterns[pattern]++;
-
-                    if(allPatterns[pattern] >= test.ondergrens){
-    
-                        if(sealing < allPatterns[pattern]){
-                            sealing = allPatterns[pattern];
-                        }
-    
-                        j = subStringLength + 3; // to break on next substringlength
-                        validSubstringFound = true;
-                    }
-                }
-
-            })
-
-
-        });
-
-        // PRINT HERE
-        // if valid substring (ondergrens approved) has been found
-        // stop searching
-
-        
-        if(validSubstringFound || subStringLength == 0){
-            if(subStringLength == 0){
-                console.log(testIndex + " ONMOGELIJK");
-            }
-            else{
-                printOutput(testIndex, allPatterns, sealing);
+                printOutput(testIndex, allPatterns, test.ondergrens);
                 j = subStringLength + 3; //to break
             }
         }
